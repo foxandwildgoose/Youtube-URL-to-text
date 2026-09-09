@@ -17,7 +17,10 @@ import {
   type SummaryKind,
 } from "@/lib/intertext/types";
 import { EmptyState } from "./empty-state";
+import { ExtractSkeleton } from "./extract-skeleton";
 import { ResultPane } from "./result-pane";
+import { SegmentedControl } from "./segmented-control";
+import { ThemeToggle } from "./theme-toggle";
 
 const LANGS: Array<{ id: LangMode; label: string }> = [
   { id: "auto", label: "Auto" },
@@ -67,9 +70,10 @@ function finishJob(
   const names = speakers.length > 0 ? speakers : speakersFromSummary(summary);
   let paragraphs = job.paragraphs;
   if (kind === "interview" || kind === "podcast") {
-    paragraphs = turns.length > 0
-      ? applySpeakerNames(job.paragraphs, names, turns)
-      : labelInterviewByRole(job.paragraphs, names);
+    paragraphs =
+      turns.length > 0
+        ? applySpeakerNames(job.paragraphs, names, turns)
+        : labelInterviewByRole(job.paragraphs, names);
   } else {
     paragraphs = applySpeakerNames(job.paragraphs, names);
   }
@@ -212,18 +216,24 @@ export function Workspace() {
 
   return (
     <div className="min-h-dvh bg-bg text-fg">
-      <header className="border-b border-border">
-        <div className="mx-auto flex max-w-3xl flex-col gap-2 px-4 py-6 sm:px-6">
-          <p className="font-serif text-3xl tracking-tight italic sm:text-4xl">INTERTEXT</p>
-          <p className="max-w-xl text-sm text-muted">
-            Public YouTube talks as readable text — title, summary, then transcript.
-          </p>
+      <header className="theme-surface sticky top-0 z-30 bg-bg pt-[env(safe-area-inset-top)]">
+        <div className="mx-auto flex max-w-4xl items-center justify-between gap-4 px-4 py-3 sm:px-6 sm:py-4">
+          <div className="min-w-0">
+            <p className="font-serif text-2xl tracking-tight italic sm:text-3xl">INTERTEXT</p>
+            <p className="truncate text-xs text-muted sm:text-sm">
+              Public YouTube talks as readable text.
+            </p>
+          </div>
+          <ThemeToggle />
         </div>
-        <div className="h-px bg-accent" />
+        <div className="header-rule" />
       </header>
 
-      <main className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-6 sm:px-6 sm:py-8">
-        <form onSubmit={onSubmit} className="space-y-4">
+      <main className="mx-auto flex max-w-4xl flex-col gap-6 px-4 py-6 sm:px-6 sm:py-8">
+        <form
+          onSubmit={onSubmit}
+          className="theme-surface space-y-5 rounded-xl border border-border bg-panel p-5 shadow-[var(--it-shadow-card)] sm:p-6"
+        >
           <div className="space-y-2">
             <label htmlFor="yt-url" className="text-sm font-medium text-muted">
               YouTube URL or video ID
@@ -245,72 +255,46 @@ export function Workspace() {
 
           <div className="space-y-2">
             <p className="text-sm font-medium text-muted">Caption language</p>
-            <div
-              role="radiogroup"
+            <SegmentedControl
               aria-label="Caption language"
-              className="flex min-h-12 rounded-md bg-panel p-1"
-            >
-              {LANGS.map((opt) => {
-                const on = lang === opt.id;
-                return (
-                  <button
-                    key={opt.id}
-                    type="button"
-                    role="radio"
-                    aria-checked={on}
-                    disabled={busy}
-                    onClick={() => setLang(opt.id)}
-                    className={
-                      on
-                        ? "h-10 min-h-10 flex-1 rounded-sm bg-bg text-sm text-fg"
-                        : "h-10 min-h-10 flex-1 rounded-sm text-sm text-muted hover:text-fg"
-                    }
-                  >
-                    {opt.label}
-                    {opt.id !== "auto" ? (
+              value={lang}
+              disabled={busy}
+              onChange={setLang}
+              options={LANGS.map((opt) => ({
+                id: opt.id,
+                label:
+                  opt.id === "auto" ? (
+                    opt.label
+                  ) : (
+                    <>
+                      {opt.label}
                       <span className="ml-1 text-xs text-subtle">({opt.id})</span>
-                    ) : null}
-                  </button>
-                );
-              })}
-            </div>
+                    </>
+                  ),
+              }))}
+            />
           </div>
 
           <div className="space-y-2">
             <p className="text-sm font-medium text-muted">Summary type</p>
-            <div
-              role="radiogroup"
+            <SegmentedControl
               aria-label="Summary type"
-              className="grid grid-cols-3 gap-1 rounded-md bg-panel p-1 sm:grid-cols-5"
-            >
-              {SUMMARY_KINDS.map((opt) => {
-                const on = summaryKind === opt.id;
-                return (
-                  <button
-                    key={opt.id}
-                    type="button"
-                    role="radio"
-                    aria-checked={on}
-                    aria-label={`${opt.label}. ${opt.hint}`}
-                    disabled={busy}
-                    onClick={() => setSummaryKind(opt.id)}
-                    className={
-                      on
-                        ? "h-11 min-h-11 rounded-sm bg-bg px-2 text-sm text-fg"
-                        : "h-11 min-h-11 rounded-sm px-2 text-sm text-muted hover:text-fg"
-                    }
-                  >
-                    {opt.label}
-                  </button>
-                );
-              })}
-            </div>
+              value={summaryKind}
+              disabled={busy}
+              className="seg-grid"
+              onChange={setSummaryKind}
+              options={SUMMARY_KINDS.map((opt) => ({
+                id: opt.id,
+                label: opt.label,
+                ariaLabel: `${opt.label}. ${opt.hint}`,
+              }))}
+            />
             <p className="text-xs text-subtle">
               {SUMMARY_KINDS.find((k) => k.id === summaryKind)?.hint}
             </p>
           </div>
 
-          <Button type="submit" size="lg" className="w-full sm:w-48" disabled={busy}>
+          <Button type="submit" size="lg" className="w-full sm:w-auto sm:min-w-44" disabled={busy}>
             {busy ? (
               <>
                 <LoaderCircle className="animate-spin" />
@@ -336,21 +320,10 @@ export function Workspace() {
           {statusLabel}
         </p>
 
-        {busy ? (
-          <div className="rounded-xl border border-border bg-panel px-5 py-8">
-            <p className="flex items-center gap-3 text-sm text-muted">
-              <LoaderCircle className="size-4 animate-spin text-accent" />
-              {progress}
-            </p>
-            <p className="mt-2 text-sm text-subtle">
-              Public caption tracks only — the video is not downloaded. Summary is written after
-              the transcript is cleaned.
-            </p>
-          </div>
-        ) : null}
+        {busy ? <ExtractSkeleton progress={progress} /> : null}
 
         {status === "error" && error ? (
-          <div className="rounded-xl border border-border bg-panel p-5">
+          <div className="theme-surface rounded-xl border border-border bg-panel p-5">
             <p className="flex items-start gap-2 text-sm text-danger">
               <AlertCircle className="mt-0.5 size-4 shrink-0" />
               <span>{error.message}</span>
@@ -387,15 +360,15 @@ export function Workspace() {
         {showEmpty ? <EmptyState onPick={setInput} /> : null}
 
         {showResult && job ? (
-          <div ref={resultRef}>
+          <div ref={resultRef} className="result-enter scroll-mt-28">
             <ResultPane key={`${job.videoId}-${job.language}-${job.createdAt}-${job.summaryKind}`} job={job} />
           </div>
         ) : null}
 
         {jobs.length > 0 ? (
           <section aria-label="Recent jobs">
-            <h2 className="text-xs font-medium tracking-wide text-subtle uppercase">Recent</h2>
-            <ul className="mt-3 divide-y divide-border overflow-hidden rounded-xl border border-border bg-panel">
+            <h2 className="label-caps text-subtle">Recent</h2>
+            <ul className="theme-surface mt-3 divide-y divide-border overflow-hidden rounded-xl border border-border bg-panel">
               {jobs.map((item) => (
                 <li key={`${item.videoId}-${item.language}-${item.createdAt}`}>
                   <button
@@ -419,7 +392,7 @@ export function Workspace() {
         ) : null}
       </main>
 
-      <footer className="mx-auto max-w-3xl px-4 pb-10 sm:px-6">
+      <footer className="mx-auto max-w-4xl px-4 pb-10 sm:px-6">
         <p className="text-xs leading-relaxed text-subtle">
           Personal research use only; do not republish copyrighted interviews; this app reads
           public captions, it does not download the video.

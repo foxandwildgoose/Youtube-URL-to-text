@@ -1,11 +1,21 @@
-import { i as __toESM, n as __exportAll } from "../_runtime.mjs";
+import { i as __toESM } from "../_runtime.mjs";
 import { R as require_react, _ as useRouter, f as createRouter, g as createRootRoute, h as createFileRoute, l as Scripts, m as lazyRouteComponent, p as Outlet, u as HeadContent, v as require_jsx_runtime } from "../_libs/@tanstack/react-router+[...].mjs";
-import { t as TriangleAlert } from "../_libs/lucide-react.mjs";
+import { n as TriangleAlert } from "../_libs/lucide-react.mjs";
 import { a as union, i as string, n as number, r as object, t as literal } from "../_libs/zod.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/router-Bq-fXSqk.js
-var router_Bq_fXSqk_exports = /* @__PURE__ */ __exportAll({ getRouter: () => getRouter });
+import { t as create } from "../_libs/zustand.mjs";
+//#region node_modules/.nitro/vite/services/ssr/assets/router-BbU7qyNd.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
+var __defProp = Object.defineProperty;
+var __exportAll = (all, no_symbols) => {
+	let target = {};
+	for (var name in all) __defProp(target, name, {
+		get: all[name],
+		enumerable: true
+	});
+	if (!no_symbols) __defProp(target, Symbol.toStringTag, { value: "Module" });
+	return target;
+};
 var FALLBACK_MESSAGE = "An unexpected error occurred. Try reloading the page.";
 function errorMessage(error) {
 	if (error instanceof Error && error.message) return error.message;
@@ -297,7 +307,71 @@ function PreviewHostBridge() {
 	}, [router]);
 	return null;
 }
-var styles_default = "/assets/styles-C5MEeR2A.css";
+var THEME_KEY = "intertext-theme";
+var THEME_MODES = [
+	"system",
+	"light",
+	"dark"
+];
+function isThemeMode(value) {
+	return value === "system" || value === "light" || value === "dark";
+}
+function parseThemeMode(value) {
+	return isThemeMode(value) ? value : "system";
+}
+function resolveTheme(mode, prefersDark) {
+	if (mode === "system") return prefersDark ? "dark" : "light";
+	return mode;
+}
+function themeColor(resolved) {
+	return resolved === "dark" ? "#14110E" : "#F6F3EE";
+}
+function prefersDark() {
+	return typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches;
+}
+function applyTheme(mode, dark = prefersDark()) {
+	const resolved = resolveTheme(mode, dark);
+	if (typeof document === "undefined") return resolved;
+	const root = document.documentElement;
+	root.setAttribute("data-theme", resolved);
+	root.style.colorScheme = resolved;
+	root.classList.toggle("dark", resolved === "dark");
+	const meta = document.querySelector("meta[name=\"theme-color\"]");
+	if (meta) meta.setAttribute("content", themeColor(resolved));
+	return resolved;
+}
+var useThemeStore = create((set) => ({
+	mode: "system",
+	setMode: (mode) => {
+		if (typeof window !== "undefined") window.localStorage.setItem(THEME_KEY, mode);
+		applyTheme(mode);
+		set({ mode });
+	}
+}));
+function hydrateTheme() {
+	const mode = typeof window === "undefined" ? "system" : parseThemeMode(window.localStorage.getItem(THEME_KEY));
+	applyTheme(mode);
+	useThemeStore.setState({ mode });
+	return mode;
+}
+var THEME_BOOT_SCRIPT = `(function(){try{var m=localStorage.getItem(${JSON.stringify(THEME_KEY)});if(m!=="light"&&m!=="dark"&&m!=="system")m="system";var d=m==="dark"||(m==="system"&&matchMedia("(prefers-color-scheme: dark)").matches);var t=d?"dark":"light";var e=document.documentElement;e.setAttribute("data-theme",t);e.style.colorScheme=t;e.classList.toggle("dark",d);var n=document.querySelector('meta[name="theme-color"]');if(n)n.setAttribute("content",d?"#14110E":"#F6F3EE");}catch(e){document.documentElement.setAttribute("data-theme","light");}})();`;
+function ThemeProvider({ children }) {
+	const mode = useThemeStore((s) => s.mode);
+	(0, import_react.useEffect)(() => {
+		hydrateTheme();
+		const mq = window.matchMedia("(prefers-color-scheme: dark)");
+		const onChange = () => {
+			if (useThemeStore.getState().mode === "system") hydrateTheme();
+		};
+		mq.addEventListener("change", onChange);
+		return () => mq.removeEventListener("change", onChange);
+	}, []);
+	(0, import_react.useEffect)(() => {
+		document.documentElement.dataset.themeMode = mode;
+	}, [mode]);
+	return children;
+}
+var styles_default = "/assets/styles-BNGfLMsa.css";
 var APP_NAME = "INTERTEXT";
 var FONT_HREF = "https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Noto+Sans+KR:wght@400;500;600;700&family=Schibsted+Grotesk:ital,wght@0,400..700;1,400..700&display=swap";
 var Route$1 = createRootRoute({
@@ -315,7 +389,7 @@ var Route$1 = createRootRoute({
 			},
 			{
 				name: "theme-color",
-				content: "#0B0D10"
+				content: "#F6F3EE"
 			}
 		],
 		links: [
@@ -352,25 +426,26 @@ var Route$1 = createRootRoute({
 	}),
 	component: () => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("html", {
 		lang: "en",
-		className: "dark antialiased",
+		className: "antialiased",
 		suppressHydrationWarning: true,
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("head", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(HeadContent, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("body", {
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("head", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("script", { dangerouslySetInnerHTML: { __html: THEME_BOOT_SCRIPT } }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(HeadContent, {})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("body", {
 			className: "min-h-dvh bg-bg font-sans text-fg",
 			children: [
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(PreviewHostBridge, {}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AuthProvider, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Outlet, {}) }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AuthProvider, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ThemeProvider, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Outlet, {}) }) }),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Scripts, {})
 			]
 		})]
 	})
 });
-var $$splitComponentImporter = () => import("./routes-C7a2HE2E.mjs");
+var $$splitComponentImporter = () => import("./routes-CIVy1IGE.mjs");
 var rootRouteChildren = { IndexRoute: createFileRoute("/")({ component: lazyRouteComponent($$splitComponentImporter, "component") }).update({
 	id: "/",
 	path: "/",
 	getParentRoute: () => Route$1
 }) };
 var routeTree = Route$1._addFileChildren(rootRouteChildren)._addFileTypes();
+var router_exports = /* @__PURE__ */ __exportAll({ getRouter: () => getRouter });
 function getRouter() {
 	return createRouter({
 		routeTree,
@@ -378,4 +453,4 @@ function getRouter() {
 	});
 }
 //#endregion
-export { getRouter, router_Bq_fXSqk_exports as t };
+export { THEME_MODES as n, useThemeStore as r, router_exports as t };

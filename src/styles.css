@@ -1,18 +1,61 @@
 @import "tailwindcss";
 
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+  --it-bg: #f6f3ee;
+  --it-panel: #fffcf8;
+  --it-panel-2: #f1eee8;
+  --it-fg: #1c1915;
+  --it-muted: #5e584f;
+  --it-subtle: #6e675e;
+  --it-border: #e4dfd6;
+  --it-accent: #b8873a;
+  --it-accent-fg: #1c1915;
+  --it-accent-text: #8a641c;
+  --it-accent-hover: color-mix(in oklab, #b8873a 92%, #1c1915);
+  --it-danger: #c45c4a;
+  --it-ok: #3f7d4e;
+  --it-ring: #b8873a;
+  --it-shadow-card: 0 8px 24px rgba(28, 25, 21, 0.04);
+  --it-header-rule: color-mix(in oklab, #b8873a 35%, transparent);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --it-bg: #14110e;
+  --it-panel: #1c1915;
+  --it-panel-2: #24201b;
+  --it-fg: #f3eee6;
+  --it-muted: #b7afa3;
+  --it-subtle: #9a9286;
+  --it-border: #3a342c;
+  --it-accent: #d4a15c;
+  --it-accent-fg: #16120b;
+  --it-accent-text: #d4a15c;
+  --it-accent-hover: color-mix(in oklab, #d4a15c 92%, #16120b);
+  --it-danger: #e07a6a;
+  --it-ok: #8fbb84;
+  --it-ring: #d4a15c;
+  --it-shadow-card: none;
+  --it-header-rule: color-mix(in oklab, #d4a15c 35%, transparent);
+}
+
 @theme {
-  --color-bg: #0b0d10;
-  --color-panel: #14181d;
-  --color-panel-2: #1a2027;
-  --color-fg: #e8edf2;
-  --color-muted: #a7b0b8;
-  --color-subtle: #6f7881;
-  --color-accent: #d4a15c;
-  --color-accent-fg: #16120b;
-  --color-border: #252b33;
-  --color-danger: #e07a6a;
-  --color-ok: #8fbb84;
-  --color-ring: #d4a15c;
+  --color-bg: var(--it-bg);
+  --color-panel: var(--it-panel);
+  --color-panel-2: var(--it-panel-2);
+  --color-fg: var(--it-fg);
+  --color-muted: var(--it-muted);
+  --color-subtle: var(--it-subtle);
+  --color-accent: var(--it-accent);
+  --color-accent-fg: var(--it-accent-fg);
+  --color-accent-text: var(--it-accent-text);
+  --color-accent-hover: var(--it-accent-hover);
+  --color-border: var(--it-border);
+  --color-danger: var(--it-danger);
+  --color-ok: var(--it-ok);
+  --color-ring: var(--it-ring);
 
   --font-sans: "Schibsted Grotesk", "Noto Sans KR", "Apple SD Gothic Neo",
     "Malgun Gothic", ui-sans-serif, system-ui, sans-serif;
@@ -20,11 +63,13 @@
     serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
-  --radius-sm: 0.375rem;
-  --radius-md: 0.625rem;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
   --radius-lg: 1rem;
-  --radius-xl: 1.375rem;
+  --radius-xl: 1.25rem;
+  --radius-2xl: 1.25rem;
   --scale-96: 0.96;
+  --leading-read: 1.7;
 }
 
 @layer base {
@@ -46,6 +91,15 @@
     font-family: var(--font-sans);
   }
 
+  html,
+  body,
+  header,
+  footer {
+    transition-property: background-color, color, border-color, box-shadow;
+    transition-duration: 200ms;
+    transition-timing-function: ease;
+  }
+
   h1,
   h2,
   h3 {
@@ -57,7 +111,7 @@
   }
 
   ::selection {
-    background: color-mix(in oklab, var(--color-accent) 35%, transparent);
+    background: color-mix(in oklab, var(--color-accent) 32%, transparent);
     color: var(--color-fg);
   }
 }
@@ -73,13 +127,128 @@
   }
 }
 
+.theme-surface {
+  transition-property: background-color, color, border-color, box-shadow;
+  transition-duration: 200ms;
+  transition-timing-function: ease;
+}
+
+.header-rule {
+  height: 1px;
+  background: var(--it-header-rule);
+}
+
+.seg-track {
+  display: flex;
+  align-items: stretch;
+  gap: 0.125rem;
+  padding: 0.25rem;
+  border-radius: var(--radius-lg);
+  background: var(--color-panel-2);
+}
+
+.seg-item {
+  display: inline-flex;
+  min-height: 2.75rem;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  padding-inline: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--color-muted);
+  transition-property: background-color, color, border-color, box-shadow;
+  transition-duration: 150ms;
+  transition-timing-function: ease-out;
+}
+
+.seg-item:hover:not(:disabled):not(.seg-item-on) {
+  color: var(--color-fg);
+}
+
+.seg-item:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-bg), 0 0 0 4px var(--color-ring);
+}
+
+.seg-item-on {
+  background: var(--color-panel);
+  color: var(--color-fg);
+  border-color: var(--color-border);
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--color-accent) 32%, transparent);
+}
+
+.seg-item-sm {
+  min-width: 2.75rem;
+  flex: 0 0 auto;
+  padding-inline: 0.625rem;
+}
+
+.seg-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.125rem;
+  padding: 0.25rem;
+  border-radius: var(--radius-lg);
+  background: var(--color-panel-2);
+}
+
+@media (min-width: 640px) {
+  .seg-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+.skeleton-pulse {
+  background: var(--color-panel-2);
+  animation: skeleton-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes skeleton-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+.result-enter {
+  animation: result-enter 250ms cubic-bezier(0.22, 1, 0.36, 1);
+  scroll-margin-top: 6.5rem;
+}
+
+@keyframes result-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .transcript-block {
   content-visibility: auto;
   contain-intrinsic-size: auto 5.5rem;
 }
 
 .mark-hit {
-  background: color-mix(in oklab, var(--color-accent) 28%, transparent);
+  background: color-mix(in oklab, var(--color-accent) 32%, transparent);
   color: var(--color-fg);
   border-radius: 2px;
+}
+
+.label-caps {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.leading-read {
+  line-height: 1.7;
 }

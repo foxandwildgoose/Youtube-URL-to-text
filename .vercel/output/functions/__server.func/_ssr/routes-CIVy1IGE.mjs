@@ -3,11 +3,12 @@ import { M as isRedirect, R as require_react, _ as useRouter, v as require_jsx_r
 import { n as TSS_SERVER_FUNCTION, r as getServerFnById, t as createServerFn } from "./ssr.mjs";
 import { n as attachSpeakersToSegments, o as labelInterviewByRole, s as speakersFromSummary, t as applySpeakerNames } from "./speakers-B7cJ0sRR.mjs";
 import { a as formatSrtTime, c as parseYouTubeInput, d as wordCount, i as formatDurationClock, n as estimatedReadMinutes, o as formatTimestamp, r as extractViaYtai, s as isVideoId, t as canonicalWatchUrl, u as visibleTranscript } from "./providers-MDEgyDxZ.mjs";
-import { a as FileJson, c as CircleAlert, i as FileText, l as Check, n as Search, o as Download, r as LoaderCircle, s as Copy } from "../_libs/lucide-react.mjs";
+import { a as Moon, c as FileText, d as Copy, f as CircleAlert, i as Search, l as FileJson, o as Monitor, p as Check, r as Sun, s as LoaderCircle, t as X, u as Download } from "../_libs/lucide-react.mjs";
+import { n as THEME_MODES, r as useThemeStore } from "./router-BbU7qyNd.mjs";
 import { n as isSummaryKind, t as SUMMARY_KINDS } from "./types-CBU5YDVN.mjs";
 import { n as clsx, t as cva } from "../_libs/class-variance-authority+clsx.mjs";
 import { t as twMerge } from "../_libs/tailwind-merge.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/routes-C7a2HE2E.js
+//#region node_modules/.nitro/vite/services/ssr/assets/routes-CIVy1IGE.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 function useServerFn(serverFn) {
@@ -29,19 +30,19 @@ function useServerFn(serverFn) {
 function cn(...inputs) {
 	return twMerge(clsx(inputs));
 }
-var buttonVariants = cva("inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-[color,background-color,box-shadow,transform,opacity] duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg disabled:pointer-events-none disabled:opacity-40 active:enabled:scale-96 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0", {
+var buttonVariants = cva("inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-[color,background-color,box-shadow,transform,opacity] duration-100 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-bg disabled:pointer-events-none disabled:opacity-40 active:enabled:scale-96 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0", {
 	variants: {
 		variant: {
-			default: "bg-accent text-accent-fg hover:bg-accent/90",
+			default: "bg-accent text-accent-fg hover:bg-accent-hover",
 			secondary: "border border-border bg-panel text-fg hover:bg-panel-2",
-			outline: "border border-border bg-transparent text-fg hover:bg-panel",
-			ghost: "text-muted hover:bg-panel hover:text-fg",
+			outline: "border border-border bg-transparent text-fg hover:bg-panel-2",
+			ghost: "text-muted hover:bg-panel-2 hover:text-fg",
 			danger: "bg-danger/15 text-danger hover:bg-danger/25"
 		},
 		size: {
 			default: "h-11 min-h-11 px-4 text-sm",
 			sm: "h-9 min-h-9 px-3 text-sm",
-			lg: "h-12 min-h-12 px-5 text-sm",
+			lg: "h-11 min-h-11 px-5 text-sm sm:h-12 sm:min-h-12",
 			wrap: "h-auto min-h-11 px-3 py-2 text-sm"
 		}
 	},
@@ -63,7 +64,7 @@ function Button({ className, variant, size, type = "button", ...props }) {
 function Input({ className, type = "text", ...props }) {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
 		type,
-		className: cn("flex h-12 min-h-12 w-full rounded-md border border-border bg-panel px-4 text-base text-fg shadow-[0_0_0_1px_rgba(232,237,242,0.04)] transition-[border-color,box-shadow] duration-150 ease-out placeholder:text-subtle", "focus-visible:border-accent/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/70 focus-visible:ring-offset-2 focus-visible:ring-offset-bg", "disabled:cursor-not-allowed disabled:opacity-50", className),
+		className: cn("flex h-12 min-h-12 w-full rounded-md border border-border bg-panel px-4 text-base text-fg transition-[border-color,box-shadow] duration-150 ease-out placeholder:text-subtle", "focus-visible:border-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/70 focus-visible:ring-offset-2 focus-visible:ring-offset-bg", "disabled:cursor-not-allowed disabled:opacity-50", className),
 		...props
 	});
 }
@@ -274,7 +275,7 @@ var STEPS = [
 ];
 function EmptyState({ onPick }) {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", {
-		className: "rounded-xl border border-border bg-panel p-5",
+		className: "theme-surface rounded-xl border border-border bg-panel p-5 sm:p-6",
 		children: [
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
 				className: "font-serif text-xl tracking-tight",
@@ -285,26 +286,26 @@ function EmptyState({ onPick }) {
 				children: STEPS.map((step, i) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", {
 					className: "flex gap-3 text-sm leading-relaxed text-muted",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-						className: "font-serif text-lg leading-none text-accent tabular-nums",
+						className: "font-serif text-lg leading-none text-accent-text tabular-nums",
 						children: i + 1
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: step })]
 				}, step))
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-				className: "mt-6 text-xs font-medium tracking-wide text-subtle uppercase",
+				className: "label-caps mt-6 text-subtle",
 				children: "Example URLs"
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("ul", {
 				className: "mt-2 space-y-2",
 				children: EXAMPLES.map((ex) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-					variant: "outline",
+					variant: "ghost",
 					size: "wrap",
-					className: "h-auto w-full justify-start px-3 py-3 text-left",
+					className: "h-auto w-full justify-start px-3 py-3 text-left hover:bg-panel-2",
 					onClick: () => onPick(ex.url),
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
 						className: "flex min-w-0 flex-col gap-0.5",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-							className: "text-xs text-subtle",
+							className: "label-caps text-subtle",
 							children: ex.label
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 							className: "truncate font-mono text-xs text-fg",
@@ -320,9 +321,35 @@ function EmptyState({ onPick }) {
 		]
 	});
 }
+function ExtractSkeleton({ progress }) {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "theme-surface rounded-xl border border-border bg-panel px-5 py-6",
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+				className: "flex items-center gap-3 text-sm text-muted",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LoaderCircle, { className: "size-4 animate-spin text-accent-text" }), progress]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+				className: "mt-2 text-sm text-subtle",
+				children: "Public caption tracks only — the video is not downloaded. Summary is written after the transcript is cleaned."
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "mt-5 space-y-3",
+				"aria-hidden": "true",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "skeleton-pulse h-8 w-2/3 rounded-md" }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "skeleton-pulse h-3 w-full rounded-sm" }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "skeleton-pulse h-3 w-11/12 rounded-sm" }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "skeleton-pulse h-3 w-4/5 rounded-sm" }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "skeleton-pulse mt-4 h-24 w-full rounded-lg" })
+				]
+			})
+		]
+	});
+}
 function Badge({ className, tone = "neutral", ...props }) {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-		className: cn("inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium tracking-wide", tone === "neutral" && "bg-panel-2 text-muted", tone === "accent" && "bg-accent/15 text-accent", tone === "ok" && "bg-ok/15 text-ok", tone === "danger" && "bg-danger/15 text-danger", className),
+		className: cn("inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-medium tracking-wide", tone === "neutral" && "border-border bg-panel-2 text-muted", tone === "accent" && "border-accent/25 bg-accent/10 text-accent-text", tone === "ok" && "border-ok/25 bg-ok/10 text-ok", tone === "danger" && "border-danger/25 bg-danger/10 text-danger", className),
 		...props
 	});
 }
@@ -414,6 +441,26 @@ function downloadUtf8(filename, contents, mime, bom = false) {
 	a.remove();
 	URL.revokeObjectURL(href);
 }
+function SegmentedControl({ value, onChange, options, "aria-label": ariaLabel, disabled, className, itemClassName }) {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+		role: "radiogroup",
+		"aria-label": ariaLabel,
+		className: cn("seg-track", className),
+		children: options.map((opt) => {
+			const on = value === opt.id;
+			return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+				type: "button",
+				role: "radio",
+				"aria-checked": on,
+				"aria-label": opt.ariaLabel,
+				disabled,
+				onClick: () => onChange(opt.id),
+				className: cn("seg-item", itemClassName, on && "seg-item-on"),
+				children: opt.label
+			}, opt.id);
+		})
+	});
+}
 function escapeRegExp(value) {
 	return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
@@ -451,24 +498,24 @@ function TranscriptView({ paragraphs, mode, query, language }) {
 	});
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("article", {
 		lang: language,
-		className: "space-y-5",
+		className: "max-w-prose space-y-5",
 		children: filtered.map((paragraph, index) => {
 			const n = paragraphs.indexOf(paragraph) + 1;
 			const prev = index > 0 ? filtered[index - 1] : void 0;
 			const showSpeaker = Boolean(paragraph.speaker) && paragraph.speaker !== prev?.speaker;
 			return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
-				className: "transcript-block text-pretty text-base leading-relaxed text-fg",
+				className: "transcript-block text-pretty text-base leading-read text-fg",
 				children: [
 					mode === "srt" ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-						className: "mb-1 block font-mono text-xs tabular-nums text-subtle",
+						className: "label-caps mb-1 block text-subtle tabular-nums",
 						children: n
 					}) : null,
 					showSpeaker ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-						className: "mb-1 block text-sm font-medium tracking-wide text-accent",
+						className: "mb-1 block text-sm font-medium tracking-wide text-accent-text",
 						children: paragraph.speaker
 					}) : null,
 					mode !== "off" ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-						className: "mr-2 font-mono text-xs tabular-nums text-accent",
+						className: "mr-2 font-mono text-xs tabular-nums text-accent-text",
 						children: [
 							"[",
 							formatTimestamp(paragraph.start),
@@ -545,7 +592,7 @@ function ResultPane({ job }) {
 	}
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", {
 		"aria-label": "Transcript result",
-		className: "rounded-xl border border-border bg-panel p-4 shadow-[0_0_0_1px_rgba(232,237,242,0.04)] sm:p-5",
+		className: "theme-surface rounded-xl border border-border bg-panel p-4 sm:p-6",
 		children: [
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "space-y-3",
@@ -558,7 +605,7 @@ function ResultPane({ job }) {
 						href: job.url,
 						target: "_blank",
 						rel: "noreferrer",
-						className: "inline-block break-all text-sm text-muted underline-offset-4 hover:text-accent hover:underline",
+						className: "inline-block break-all text-sm text-muted underline-offset-4 hover:text-accent-text hover:underline",
 						children: job.url
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -600,20 +647,30 @@ function ResultPane({ job }) {
 				]
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "mt-5 space-y-3",
+				className: "mt-6 space-y-3",
 				children: [
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "relative",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Search, {
-							className: "pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-subtle",
-							"aria-hidden": "true"
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-							value: query,
-							onChange: (e) => setQuery(e.target.value),
-							placeholder: "Search title, summary, and transcript",
-							"aria-label": "Search transcript",
-							className: "h-11 min-h-11 pl-10"
-						})]
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Search, {
+								className: "pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-subtle",
+								"aria-hidden": "true"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								value: query,
+								onChange: (e) => setQuery(e.target.value),
+								placeholder: "Search title, summary, and transcript",
+								"aria-label": "Search transcript",
+								className: "h-11 min-h-11 pr-11 pl-10"
+							}),
+							query ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+								type: "button",
+								onClick: () => setQuery(""),
+								className: "absolute top-1/2 right-2 flex size-8 -translate-y-1/2 items-center justify-center rounded-md text-muted hover:bg-panel-2 hover:text-fg",
+								"aria-label": "Clear search",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(X, { className: "size-4" })
+							}) : null
+						]
 					}),
 					query.trim() ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
 						className: "text-xs tabular-nums text-muted",
@@ -626,35 +683,27 @@ function ResultPane({ job }) {
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-							className: "text-xs font-medium tracking-wide text-muted uppercase",
+							className: "label-caps text-subtle",
 							children: "Timestamps"
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							role: "radiogroup",
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SegmentedControl, {
 							"aria-label": "Timestamp mode",
-							className: "flex rounded-md bg-bg p-1",
-							children: TS_OPTIONS.map((opt) => {
-								const on = tsMode === opt.id;
-								return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
-									type: "button",
-									role: "radio",
-									"aria-checked": on,
-									onClick: () => setTsMode(opt.id),
-									className: on ? "h-9 min-h-9 flex-1 rounded-sm bg-panel px-3 text-sm text-fg sm:flex-none" : "h-9 min-h-9 flex-1 rounded-sm px-3 text-sm text-muted hover:text-fg sm:flex-none",
-									children: opt.label
-								}, opt.id);
-							})
+							value: tsMode,
+							onChange: setTsMode,
+							className: "w-full sm:w-auto",
+							itemClassName: "sm:flex-none",
+							options: TS_OPTIONS
 						})]
 					})
 				]
 			}),
 			job.summary ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", {
 				"aria-label": "Summary",
-				className: "mt-5 rounded-lg border border-border bg-bg px-4 py-4",
+				className: "mt-6 border-t border-border pt-5",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
-					className: "text-xs font-medium tracking-wide text-subtle uppercase",
+					className: "label-caps text-subtle",
 					children: ["Summary · ", summaryLabel]
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-					className: "mt-3 whitespace-pre-wrap text-sm leading-relaxed text-fg",
+					className: "mt-3 max-w-prose whitespace-pre-wrap text-base leading-read text-fg",
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(HighlightedText, {
 						text: job.summary,
 						query
@@ -663,9 +712,9 @@ function ResultPane({ job }) {
 			}) : null,
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", {
 				"aria-label": "Transcript",
-				className: "mt-5 rounded-lg bg-bg px-4 py-5",
+				className: "mt-6 border-t border-border pt-5",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-					className: "mb-4 text-xs font-medium tracking-wide text-subtle uppercase",
+					className: "label-caps mb-4 text-subtle",
 					children: "Transcript"
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TranscriptView, {
 					paragraphs: job.paragraphs,
@@ -675,34 +724,34 @@ function ResultPane({ job }) {
 				})]
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "-mx-4 mt-5 border-t border-border bg-panel px-4 pt-4 pb-1 sm:-mx-5 sm:px-5",
+				className: "mt-6 border-t border-border pt-4",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "grid grid-cols-2 gap-2 sm:grid-cols-5",
 					children: [
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 							onClick: copyVisible,
-							variant: "secondary",
+							variant: "ghost",
 							className: "col-span-2 sm:col-span-1",
 							children: [copied ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Check, {}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Copy, {}), copied ? "Copied" : "Copy text"]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 							onClick: () => download("txt"),
-							variant: "outline",
+							variant: "ghost",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileText, {}), "TXT"]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 							onClick: () => download("srt"),
-							variant: "outline",
+							variant: "ghost",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Download, {}), "SRT"]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 							onClick: () => download("md"),
-							variant: "outline",
+							variant: "ghost",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileText, {}), "Markdown"]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 							onClick: () => download("json"),
-							variant: "outline",
+							variant: "ghost",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileJson, {}), "JSON"]
 						})
 					]
@@ -717,6 +766,45 @@ function ResultPane({ job }) {
 				})]
 			})
 		]
+	});
+}
+var ICONS = {
+	system: Monitor,
+	light: Sun,
+	dark: Moon
+};
+var LABELS = {
+	system: "System",
+	light: "Light",
+	dark: "Dark"
+};
+function ThemeToggle() {
+	const mode = useThemeStore((s) => s.mode);
+	const setMode = useThemeStore((s) => s.setMode);
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+		role: "radiogroup",
+		"aria-label": "Color theme",
+		className: "seg-track shrink-0",
+		children: THEME_MODES.map((id) => {
+			const Icon = ICONS[id];
+			const on = mode === id;
+			return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+				type: "button",
+				role: "radio",
+				"aria-checked": on,
+				"aria-label": LABELS[id],
+				title: LABELS[id],
+				onClick: () => setMode(id),
+				className: cn("seg-item seg-item-sm", on && "seg-item-on"),
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Icon, {
+					className: "size-4",
+					"aria-hidden": "true"
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+					className: "sr-only",
+					children: LABELS[id]
+				})]
+			}, id);
+		})
 	});
 }
 var LANGS = [
@@ -886,24 +974,27 @@ function Workspace() {
 		className: "min-h-dvh bg-bg text-fg",
 		children: [
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("header", {
-				className: "border-b border-border",
+				className: "theme-surface sticky top-0 z-30 bg-bg pt-[env(safe-area-inset-top)]",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "mx-auto flex max-w-3xl flex-col gap-2 px-4 py-6 sm:px-6",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-						className: "font-serif text-3xl tracking-tight italic sm:text-4xl",
-						children: "INTERTEXT"
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-						className: "max-w-xl text-sm text-muted",
-						children: "Public YouTube talks as readable text — title, summary, then transcript."
-					})]
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "h-px bg-accent" })]
+					className: "mx-auto flex max-w-4xl items-center justify-between gap-4 px-4 py-3 sm:px-6 sm:py-4",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "min-w-0",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "font-serif text-2xl tracking-tight italic sm:text-3xl",
+							children: "INTERTEXT"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "truncate text-xs text-muted sm:text-sm",
+							children: "Public YouTube talks as readable text."
+						})]
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ThemeToggle, {})]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "header-rule" })]
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("main", {
-				className: "mx-auto flex max-w-3xl flex-col gap-6 px-4 py-6 sm:px-6 sm:py-8",
+				className: "mx-auto flex max-w-4xl flex-col gap-6 px-4 py-6 sm:px-6 sm:py-8",
 				children: [
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("form", {
 						onSubmit,
-						className: "space-y-4",
+						className: "theme-surface space-y-5 rounded-xl border border-border bg-panel p-5 shadow-[var(--it-shadow-card)] sm:p-6",
 						children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "space-y-2",
@@ -930,29 +1021,22 @@ function Workspace() {
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 									className: "text-sm font-medium text-muted",
 									children: "Caption language"
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-									role: "radiogroup",
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SegmentedControl, {
 									"aria-label": "Caption language",
-									className: "flex min-h-12 rounded-md bg-panel p-1",
-									children: LANGS.map((opt) => {
-										const on = lang === opt.id;
-										return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
-											type: "button",
-											role: "radio",
-											"aria-checked": on,
-											disabled: busy,
-											onClick: () => setLang(opt.id),
-											className: on ? "h-10 min-h-10 flex-1 rounded-sm bg-bg text-sm text-fg" : "h-10 min-h-10 flex-1 rounded-sm text-sm text-muted hover:text-fg",
-											children: [opt.label, opt.id !== "auto" ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-												className: "ml-1 text-xs text-subtle",
-												children: [
-													"(",
-													opt.id,
-													")"
-												]
-											}) : null]
-										}, opt.id);
-									})
+									value: lang,
+									disabled: busy,
+									onChange: setLang,
+									options: LANGS.map((opt) => ({
+										id: opt.id,
+										label: opt.id === "auto" ? opt.label : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [opt.label, /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+											className: "ml-1 text-xs text-subtle",
+											children: [
+												"(",
+												opt.id,
+												")"
+											]
+										})] })
+									}))
 								})]
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -962,23 +1046,17 @@ function Workspace() {
 										className: "text-sm font-medium text-muted",
 										children: "Summary type"
 									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-										role: "radiogroup",
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SegmentedControl, {
 										"aria-label": "Summary type",
-										className: "grid grid-cols-3 gap-1 rounded-md bg-panel p-1 sm:grid-cols-5",
-										children: SUMMARY_KINDS.map((opt) => {
-											const on = summaryKind === opt.id;
-											return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
-												type: "button",
-												role: "radio",
-												"aria-checked": on,
-												"aria-label": `${opt.label}. ${opt.hint}`,
-												disabled: busy,
-												onClick: () => setSummaryKind(opt.id),
-												className: on ? "h-11 min-h-11 rounded-sm bg-bg px-2 text-sm text-fg" : "h-11 min-h-11 rounded-sm px-2 text-sm text-muted hover:text-fg",
-												children: opt.label
-											}, opt.id);
-										})
+										value: summaryKind,
+										disabled: busy,
+										className: "seg-grid",
+										onChange: setSummaryKind,
+										options: SUMMARY_KINDS.map((opt) => ({
+											id: opt.id,
+											label: opt.label,
+											ariaLabel: `${opt.label}. ${opt.hint}`
+										}))
 									}),
 									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 										className: "text-xs text-subtle",
@@ -989,7 +1067,7 @@ function Workspace() {
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 								type: "submit",
 								size: "lg",
-								className: "w-full sm:w-48",
+								className: "w-full sm:w-auto sm:min-w-44",
 								disabled: busy,
 								children: busy ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LoaderCircle, { className: "animate-spin" }), "Extract"] }) : "Extract"
 							})
@@ -1001,18 +1079,9 @@ function Workspace() {
 						className: status === "error" ? "text-sm text-danger" : status === "ready" ? "text-sm text-ok" : "text-sm text-muted",
 						children: statusLabel
 					}),
-					busy ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "rounded-xl border border-border bg-panel px-5 py-8",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
-							className: "flex items-center gap-3 text-sm text-muted",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LoaderCircle, { className: "size-4 animate-spin text-accent" }), progress]
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-							className: "mt-2 text-sm text-subtle",
-							children: "Public caption tracks only — the video is not downloaded. Summary is written after the transcript is cleaned."
-						})]
-					}) : null,
+					busy ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ExtractSkeleton, { progress }) : null,
 					status === "error" && error ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "rounded-xl border border-border bg-panel p-5",
+						className: "theme-surface rounded-xl border border-border bg-panel p-5",
 						children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
 								className: "flex items-start gap-2 text-sm text-danger",
@@ -1052,15 +1121,16 @@ function Workspace() {
 					showEmpty ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(EmptyState, { onPick: setInput }) : null,
 					showResult && job ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 						ref: resultRef,
+						className: "result-enter scroll-mt-28",
 						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ResultPane, { job }, `${job.videoId}-${job.language}-${job.createdAt}-${job.summaryKind}`)
 					}) : null,
 					jobs.length > 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", {
 						"aria-label": "Recent jobs",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
-							className: "text-xs font-medium tracking-wide text-subtle uppercase",
+							className: "label-caps text-subtle",
 							children: "Recent"
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("ul", {
-							className: "mt-3 divide-y divide-border overflow-hidden rounded-xl border border-border bg-panel",
+							className: "theme-surface mt-3 divide-y divide-border overflow-hidden rounded-xl border border-border bg-panel",
 							children: jobs.map((item) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
 								type: "button",
 								onClick: () => reopen(item),
@@ -1089,7 +1159,7 @@ function Workspace() {
 				]
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("footer", {
-				className: "mx-auto max-w-3xl px-4 pb-10 sm:px-6",
+				className: "mx-auto max-w-4xl px-4 pb-10 sm:px-6",
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 					className: "text-xs leading-relaxed text-subtle",
 					children: "Personal research use only; do not republish copyrighted interviews; this app reads public captions, it does not download the video."

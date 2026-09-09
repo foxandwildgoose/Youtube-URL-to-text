@@ -1,6 +1,8 @@
 import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
 import { AuthProvider } from "@/lib/auth/provider";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
+import { ThemeProvider } from "@/components/theme-provider";
+import { THEME_BOOT_SCRIPT } from "@/lib/theme";
 import appCss from "../styles.css?url";
 
 const APP_NAME = "INTERTEXT";
@@ -18,7 +20,7 @@ export const Route = createRootRoute({
         content:
           "Paste a public YouTube URL. Extract clean caption text with a title, summary, and readable transcript.",
       },
-      { name: "theme-color", content: "#0B0D10" },
+      { name: "theme-color", content: "#F6F3EE" },
     ],
     links: [
       { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
@@ -31,14 +33,17 @@ export const Route = createRootRoute({
     ],
   }),
   component: () => (
-    <html lang="en" className="dark antialiased" suppressHydrationWarning>
+    <html lang="en" className="antialiased" suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
         <HeadContent />
       </head>
       <body className="min-h-dvh bg-bg font-sans text-fg">
         <PreviewHostBridge />
         <AuthProvider>
-          <Outlet />
+          <ThemeProvider>
+            <Outlet />
+          </ThemeProvider>
         </AuthProvider>
         <Scripts />
       </body>

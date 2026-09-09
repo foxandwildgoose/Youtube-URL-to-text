@@ -67,23 +67,23 @@ export function TranscriptView({
   }
 
   return (
-    <article lang={language} className="space-y-5">
+    <article lang={language} className="max-w-prose space-y-5">
       {filtered.map((paragraph, index) => {
         const n = paragraphs.indexOf(paragraph) + 1;
         const prev = index > 0 ? filtered[index - 1] : undefined;
         const showSpeaker = Boolean(paragraph.speaker) && paragraph.speaker !== prev?.speaker;
         return (
-          <p key={`${paragraph.start}-${index}`} className="transcript-block text-pretty text-base leading-relaxed text-fg">
+          <p key={`${paragraph.start}-${index}`} className="transcript-block text-pretty text-base leading-read text-fg">
             {mode === "srt" ? (
-              <span className="mb-1 block font-mono text-xs tabular-nums text-subtle">{n}</span>
+              <span className="label-caps mb-1 block text-subtle tabular-nums">{n}</span>
             ) : null}
             {showSpeaker ? (
-              <span className="mb-1 block text-sm font-medium tracking-wide text-accent">
+              <span className="mb-1 block text-sm font-medium tracking-wide text-accent-text">
                 {paragraph.speaker}
               </span>
             ) : null}
             {mode !== "off" ? (
-              <span className="mr-2 font-mono text-xs tabular-nums text-accent">
+              <span className="mr-2 font-mono text-xs tabular-nums text-accent-text">
                 [{formatTimestamp(paragraph.start)}]
               </span>
             ) : null}

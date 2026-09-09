@@ -23,32 +23,30 @@ const STEPS = [
 
 export function EmptyState({ onPick }: { onPick: (url: string) => void }) {
   return (
-    <section className="rounded-xl border border-border bg-panel p-5">
+    <section className="theme-surface rounded-xl border border-border bg-panel p-5 sm:p-6">
       <h2 className="font-serif text-xl tracking-tight">How it works</h2>
       <ol className="mt-4 space-y-3">
         {STEPS.map((step, i) => (
           <li key={step} className="flex gap-3 text-sm leading-relaxed text-muted">
-            <span className="font-serif text-lg leading-none text-accent tabular-nums">
+            <span className="font-serif text-lg leading-none text-accent-text tabular-nums">
               {i + 1}
             </span>
             <span>{step}</span>
           </li>
         ))}
       </ol>
-      <p className="mt-6 text-xs font-medium tracking-wide text-subtle uppercase">
-        Example URLs
-      </p>
+      <p className="label-caps mt-6 text-subtle">Example URLs</p>
       <ul className="mt-2 space-y-2">
         {EXAMPLES.map((ex) => (
           <li key={ex.url}>
             <Button
-              variant="outline"
+              variant="ghost"
               size="wrap"
-              className="h-auto w-full justify-start px-3 py-3 text-left"
+              className="h-auto w-full justify-start px-3 py-3 text-left hover:bg-panel-2"
               onClick={() => onPick(ex.url)}
             >
               <span className="flex min-w-0 flex-col gap-0.5">
-                <span className="text-xs text-subtle">{ex.label}</span>
+                <span className="label-caps text-subtle">{ex.label}</span>
                 <span className="truncate font-mono text-xs text-fg">{ex.url}</span>
               </span>
             </Button>
@@ -56,8 +54,8 @@ export function EmptyState({ onPick }: { onPick: (url: string) => void }) {
         ))}
       </ul>
       <p className="mt-4 text-sm text-muted">
-        Korean and English both work. Interview mode names the host and guest from the
-        talk — it does not invent A/B dialogue.
+        Korean and English both work. Interview mode names the host and guest from the talk — it
+        does not invent A/B dialogue.
       </p>
     </section>
   );

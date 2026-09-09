@@ -6,6 +6,7 @@ import {
   FileJson,
   FileText,
   Search,
+  X,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -27,6 +28,7 @@ import {
   summaryKindLabel,
 } from "@/lib/intertext/export";
 import type { Job, TimestampMode } from "@/lib/intertext/types";
+import { SegmentedControl } from "./segmented-control";
 import { countMatches, HighlightedText, TranscriptView } from "./transcript-view";
 
 const TS_OPTIONS: Array<{ id: TimestampMode; label: string }> = [
@@ -90,7 +92,7 @@ export function ResultPane({ job }: { job: Job }) {
   return (
     <section
       aria-label="Transcript result"
-      className="rounded-xl border border-border bg-panel p-4 shadow-[0_0_0_1px_rgba(232,237,242,0.04)] sm:p-5"
+      className="theme-surface rounded-xl border border-border bg-panel p-4 sm:p-6"
     >
       <div className="space-y-3">
         <h2 className="font-serif text-2xl leading-snug tracking-tight text-fg sm:text-3xl">
@@ -100,7 +102,7 @@ export function ResultPane({ job }: { job: Job }) {
           href={job.url}
           target="_blank"
           rel="noreferrer"
-          className="inline-block break-all text-sm text-muted underline-offset-4 hover:text-accent hover:underline"
+          className="inline-block break-all text-sm text-muted underline-offset-4 hover:text-accent-text hover:underline"
         >
           {job.url}
         </a>
@@ -118,7 +120,7 @@ export function ResultPane({ job }: { job: Job }) {
         </p>
       </div>
 
-      <div className="mt-5 space-y-3">
+      <div className="mt-6 space-y-3">
         <div className="relative">
           <Search
             className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-subtle"
@@ -129,8 +131,18 @@ export function ResultPane({ job }: { job: Job }) {
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search title, summary, and transcript"
             aria-label="Search transcript"
-            className="h-11 min-h-11 pl-10"
+            className="h-11 min-h-11 pr-11 pl-10"
           />
+          {query ? (
+            <button
+              type="button"
+              onClick={() => setQuery("")}
+              className="absolute top-1/2 right-2 flex size-8 -translate-y-1/2 items-center justify-center rounded-md text-muted hover:bg-panel-2 hover:text-fg"
+              aria-label="Clear search"
+            >
+              <X className="size-4" />
+            </button>
+          ) : null}
         </div>
         {query.trim() ? (
           <p className="text-xs tabular-nums text-muted">
@@ -139,48 +151,29 @@ export function ResultPane({ job }: { job: Job }) {
         ) : null}
 
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-xs font-medium tracking-wide text-muted uppercase">Timestamps</p>
-          <div
-            role="radiogroup"
+          <p className="label-caps text-subtle">Timestamps</p>
+          <SegmentedControl
             aria-label="Timestamp mode"
-            className="flex rounded-md bg-bg p-1"
-          >
-            {TS_OPTIONS.map((opt) => {
-              const on = tsMode === opt.id;
-              return (
-                <button
-                  key={opt.id}
-                  type="button"
-                  role="radio"
-                  aria-checked={on}
-                  onClick={() => setTsMode(opt.id)}
-                  className={
-                    on
-                      ? "h-9 min-h-9 flex-1 rounded-sm bg-panel px-3 text-sm text-fg sm:flex-none"
-                      : "h-9 min-h-9 flex-1 rounded-sm px-3 text-sm text-muted hover:text-fg sm:flex-none"
-                  }
-                >
-                  {opt.label}
-                </button>
-              );
-            })}
-          </div>
+            value={tsMode}
+            onChange={setTsMode}
+            className="w-full sm:w-auto"
+            itemClassName="sm:flex-none"
+            options={TS_OPTIONS}
+          />
         </div>
       </div>
 
       {job.summary ? (
-        <section aria-label="Summary" className="mt-5 rounded-lg border border-border bg-bg px-4 py-4">
-          <p className="text-xs font-medium tracking-wide text-subtle uppercase">
-            Summary · {summaryLabel}
-          </p>
-          <div className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-fg">
+        <section aria-label="Summary" className="mt-6 border-t border-border pt-5">
+          <p className="label-caps text-subtle">Summary · {summaryLabel}</p>
+          <div className="mt-3 max-w-prose whitespace-pre-wrap text-base leading-read text-fg">
             <HighlightedText text={job.summary} query={query} />
           </div>
         </section>
       ) : null}
 
-      <section aria-label="Transcript" className="mt-5 rounded-lg bg-bg px-4 py-5">
-        <p className="mb-4 text-xs font-medium tracking-wide text-subtle uppercase">Transcript</p>
+      <section aria-label="Transcript" className="mt-6 border-t border-border pt-5">
+        <p className="label-caps mb-4 text-subtle">Transcript</p>
         <TranscriptView
           paragraphs={job.paragraphs}
           mode={tsMode}
@@ -189,25 +182,25 @@ export function ResultPane({ job }: { job: Job }) {
         />
       </section>
 
-      <div className="-mx-4 mt-5 border-t border-border bg-panel px-4 pt-4 pb-1 sm:-mx-5 sm:px-5">
+      <div className="mt-6 border-t border-border pt-4">
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
-          <Button onClick={copyVisible} variant="secondary" className="col-span-2 sm:col-span-1">
+          <Button onClick={copyVisible} variant="ghost" className="col-span-2 sm:col-span-1">
             {copied ? <Check /> : <Copy />}
             {copied ? "Copied" : "Copy text"}
           </Button>
-          <Button onClick={() => download("txt")} variant="outline">
+          <Button onClick={() => download("txt")} variant="ghost">
             <FileText />
             TXT
           </Button>
-          <Button onClick={() => download("srt")} variant="outline">
+          <Button onClick={() => download("srt")} variant="ghost">
             <Download />
             SRT
           </Button>
-          <Button onClick={() => download("md")} variant="outline">
+          <Button onClick={() => download("md")} variant="ghost">
             <FileText />
             Markdown
           </Button>
-          <Button onClick={() => download("json")} variant="outline">
+          <Button onClick={() => download("json")} variant="ghost">
             <FileJson />
             JSON
           </Button>
