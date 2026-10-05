@@ -3,3 +3,8 @@ node_modules/
 .github_repo
 .env
 .env.*
+
+# Generated local speech processor assets
+public/ffmpeg/
+
+!.env.example

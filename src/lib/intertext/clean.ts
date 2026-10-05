@@ -1,10 +1,5 @@
 import type { CaptionTrack, Paragraph, Segment } from "./types.ts";
-import {
-  cueToSegment,
-  explodeSpeakerMarks,
-  fillSpeakerGaps,
-  type Cue,
-} from "./speakers.ts";
+import { cueToSegment, explodeSpeakerMarks, fillSpeakerGaps, type Cue } from "./speakers.ts";
 
 const SENTENCE_END = /[.!?…。？！]["'”’)]*$/;
 const HANGUL = /[\uAC00-\uD7A3]/;
@@ -45,7 +40,7 @@ export function normalizeCueText(input: string): string {
   return decodeEntities(input)
     .replace(/\u00a0/g, " ")
     .replace(LEADING_MARK, "")
-    .replace(/\s*[\[(](?:음악|웃음|박수|intro|music|laughter|applause)[\])]\s*/gi, " ")
+    .replace(/\s*[[(](?:음악|웃음|박수|intro|music|laughter|applause)[\])]\s*/gi, " ")
     .replace(/\s*\n+\s*/g, " ")
     .replace(/[ \t]+/g, " ")
     .trim();
@@ -77,7 +72,9 @@ function joinCue(prev: string, next: string): string {
   if (overlap > 0) {
     const extra = next.slice(overlap).trim();
     return extra
-      ? `${prev}${prev.endsWith(" ") || extra.startsWith(" ") ? "" : " "}${extra}`.replace(/\s+/g, " ").trim()
+      ? `${prev}${prev.endsWith(" ") || extra.startsWith(" ") ? "" : " "}${extra}`
+          .replace(/\s+/g, " ")
+          .trim()
       : prev;
   }
   const gap = /[\s([{‘“"'/-]$/.test(prev) || /^[\s.,!?…。？！)\]’”'"/-]/.test(next) ? "" : " ";
@@ -154,7 +151,8 @@ function shouldBreakSentence(prev: Cue, next: Cue, elapsed: number, isKo: boolea
   if (compactLen(prev.text) <= 6 && elapsed < 5) return false;
   if (elapsed >= 3.2) return true;
   if (SENTENCE_END.test(prev.text)) return elapsed >= 0.25;
-  if (!isKo && /[a-z0-9)]$/.test(prev.text) && /^[A-Z]/.test(next.text) && elapsed >= 0.8) return true;
+  if (!isKo && /[a-z0-9)]$/.test(prev.text) && /^[A-Z]/.test(next.text) && elapsed >= 0.8)
+    return true;
   if (isKo && /(?:다|요|죠|니다|까요|세요)[.!?…]*$/.test(prev.text) && elapsed >= 0.45) return true;
   return false;
 }
@@ -291,7 +289,10 @@ export function mergeContainedParagraphs(paragraphs: Paragraph[]): Paragraph[] {
     }
     const prev = out[out.length - 1]!;
     const gap = p.start - (prev.start + prev.duration);
-    if (shouldCollapsePair(prev.text, text, gap) || (gap < 1.2 && foldKey(prev.text) === foldKey(text))) {
+    if (
+      shouldCollapsePair(prev.text, text, gap) ||
+      (gap < 1.2 && foldKey(prev.text) === foldKey(text))
+    ) {
       prev.text = dedupeRepeatedPhrases(pickLonger(prev.text, text));
       prev.duration = Math.max(prev.duration, p.start + p.duration - prev.start);
       if (p.speaker && !prev.speaker) prev.speaker = p.speaker;
@@ -348,10 +349,7 @@ export function formatSrtTime(seconds: number): string {
   return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")},${String(ms).padStart(3, "0")}`;
 }
 
-export function visibleTranscript(
-  paragraphs: Paragraph[],
-  mode: "off" | "inline" | "srt",
-): string {
+export function visibleTranscript(paragraphs: Paragraph[], mode: "off" | "inline" | "srt"): string {
   const lines: string[] = [];
   let lastSpeaker: string | undefined;
   paragraphs.forEach((paragraph, i) => {
@@ -412,5 +410,11 @@ export function pickTrack(
     return matches.find((t) => t.sourceType === "manual") ?? matches[0] ?? null;
   };
   if (requested !== "auto") return ranked(requested);
-  return ranked("ko") ?? ranked("en") ?? tracks.find((t) => t.sourceType === "manual") ?? tracks[0] ?? null;
+  return (
+    ranked("ko") ??
+    ranked("en") ??
+    tracks.find((t) => t.sourceType === "manual") ??
+    tracks[0] ??
+    null
+  );
 }

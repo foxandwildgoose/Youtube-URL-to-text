@@ -18,6 +18,8 @@ export type SummarizeResult = {
 };
 
 const KIND_INSTRUCTIONS: Record<SummaryKind, string> = {
+  "ai-conference":
+    "Summarize the whole AI or technology conference: key claims, companies, products, architectures, performance numbers, timelines, demonstrations, Q&A, and conclusions. Preserve conventional English technical names. Do not invent numbers or claims.",
   general:
     "Write an overview of the whole talk: what it is, the main points in order (including the middle and the ending), and the conclusion.",
   meeting:
@@ -53,7 +55,7 @@ function clipAtBoundary(text: string, max: number): string {
 
 function stripNoise(text: string): string {
   return text
-    .replace(/\s*[\[(](?:음악|웃음|박수|intro|music|laughter|applause)[\])]\s*/gi, " ")
+    .replace(/\s*[[(](?:음악|웃음|박수|intro|music|laughter|applause)[\])]\s*/gi, " ")
     .replace(/\s+/g, " ")
     .trim();
 }
@@ -138,10 +140,7 @@ export function fallbackSummary(
   return [`${kindLabel} key points:`, ...bullets].join("\n");
 }
 
-export function isTranscriptDump(
-  summary: string,
-  paragraphs: Array<{ text: string }>,
-): boolean {
+export function isTranscriptDump(summary: string, paragraphs: Array<{ text: string }>): boolean {
   const text = summary.trim();
   if (!text) return true;
   if (/auto-extracted/i.test(text)) return true;
@@ -150,15 +149,24 @@ export function isTranscriptDump(
     .map((p) => p.text)
     .join(" ")
     .replace(/\s+/g, " ");
-  const compact = text.replace(/^[-*•]\s*/gm, "").replace(/\s+/g, " ").trim();
+  const compact = text
+    .replace(/^[-*•]\s*/gm, "")
+    .replace(/\s+/g, " ")
+    .trim();
   if (compact.length >= 80 && opening.includes(compact.slice(0, 72))) return true;
-  const lines = text.split("\n").map((l) => l.trim()).filter(Boolean);
+  const lines = text
+    .split("\n")
+    .map((l) => l.trim())
+    .filter(Boolean);
   const long = lines.filter((l) => l.length > 180).length;
   if (long >= 2 && lines.length <= 4) return true;
   return false;
 }
 
-function transcriptBody(paragraphs: Array<{ text: string; speaker?: string }>, max = MAX_PROMPT_CHARS): string {
+function transcriptBody(
+  paragraphs: Array<{ text: string; speaker?: string }>,
+  max = MAX_PROMPT_CHARS,
+): string {
   const lines: string[] = [];
   let used = 0;
   for (const p of paragraphs) {
@@ -349,7 +357,13 @@ function finalPrompt(
   ].join("\n");
 }
 
-function partPrompt(data: SummarizeInput, part: string, index: number, total: number, sample: string): string {
+function partPrompt(
+  data: SummarizeInput,
+  part: string,
+  index: number,
+  total: number,
+  sample: string,
+): string {
   return [
     `These are captions from part ${index + 1} of ${total} of one ${data.kind}.`,
     `Title: ${data.title || "(untitled)"}`,
@@ -375,7 +389,9 @@ export const summarizeTranscript = createServerFn({ method: "POST" })
           .slice(0, 800)
           .map((p) => ({
             text: p.text.slice(0, 800),
-            ...(typeof p.speaker === "string" && p.speaker ? { speaker: p.speaker.slice(0, 40) } : {}),
+            ...(typeof p.speaker === "string" && p.speaker
+              ? { speaker: p.speaker.slice(0, 40) }
+              : {}),
           }))
       : [];
     return {

@@ -1,6 +1,9 @@
+import type { MediaSource, TimestampQuality, UploadState } from "./media-types.ts";
+
 export type LangMode = "auto" | "ko" | "en";
 
-export type SummaryKind = "general" | "meeting" | "course" | "interview" | "podcast";
+export type SummaryKind =
+  "general" | "meeting" | "course" | "interview" | "podcast" | "ai-conference";
 
 export const SUMMARY_KINDS: ReadonlyArray<{
   id: SummaryKind;
@@ -12,6 +15,11 @@ export const SUMMARY_KINDS: ReadonlyArray<{
   { id: "course", label: "Course", hint: "Outline and key takeaways" },
   { id: "interview", label: "Interview", hint: "Host and guest, using their names" },
   { id: "podcast", label: "Podcast", hint: "Episode notes and highlights" },
+  {
+    id: "ai-conference",
+    label: "AI conference",
+    hint: "Session topics, technical terms, and key takeaways",
+  },
 ];
 
 export function isSummaryKind(value: string): value is SummaryKind {
@@ -23,11 +31,11 @@ export type ExtractInput = {
   lang: LangMode;
 };
 
-export type CaptionSourceType = "manual" | "asr";
+export type CaptionSourceType = "manual" | "asr" | "transcription";
 
 export type TimestampMode = "off" | "inline" | "srt";
 
-export type ProviderId = "youtube-transcript.ai" | "innertube";
+export type ProviderId = "youtube-transcript.ai" | "innertube" | "openai";
 
 export type VideoRef = {
   videoId: string;
@@ -58,8 +66,13 @@ export type Paragraph = {
 };
 
 export type Job = {
-  videoId: string;
-  url: string;
+  id?: string;
+  source?: MediaSource;
+  upload?: UploadState;
+  timestampQuality?: TimestampQuality;
+  paragraphEdits?: Record<string, { text: string; speaker?: string }>;
+  videoId?: string;
+  url?: string;
   title: string;
   language: string;
   requestedLang: LangMode;

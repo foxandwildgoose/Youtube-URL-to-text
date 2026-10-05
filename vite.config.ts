@@ -157,6 +157,8 @@ export default defineConfig(({ command, isPreview }) => ({
     strictPort: true,
   },
   resolve: { tsconfigPaths: true },
+  // Keep FFmpeg's relative module worker URL intact; it loads only for uploads.
+  optimizeDeps: { exclude: ["@ffmpeg/ffmpeg"] },
   plugins: [
     pgliteBootstrapPlugin(),
     // Before tanstackStart so /auth/popup never falls through to the SPA.

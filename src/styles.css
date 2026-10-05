@@ -57,10 +57,10 @@
   --color-ok: var(--it-ok);
   --color-ring: var(--it-ring);
 
-  --font-sans: "Schibsted Grotesk", "Noto Sans KR", "Apple SD Gothic Neo",
-    "Malgun Gothic", ui-sans-serif, system-ui, sans-serif;
-  --font-serif: "Instrument Serif", "Iowan Old Style", Georgia, "Times New Roman",
-    serif;
+  --font-sans:
+    "Schibsted Grotesk", "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", ui-sans-serif,
+    system-ui, sans-serif;
+  --font-serif: "Instrument Serif", "Iowan Old Style", Georgia, "Times New Roman", serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
   --radius-sm: 0.5rem;
@@ -169,7 +169,9 @@
 
 .seg-item:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px var(--color-bg), 0 0 0 4px var(--color-ring);
+  box-shadow:
+    0 0 0 2px var(--color-bg),
+    0 0 0 4px var(--color-ring);
 }
 
 .seg-item-on {
@@ -183,6 +185,17 @@
   min-width: 2.75rem;
   flex: 0 0 auto;
   padding-inline: 0.625rem;
+}
+
+.seg-language {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (min-width: 640px) {
+  .seg-language {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }
 
 .seg-grid {

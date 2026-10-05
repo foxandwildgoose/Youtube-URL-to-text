@@ -1,14 +1,14 @@
 import assert from "node:assert/strict";
-import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import test from "node:test";
+import test, { after } from "node:test";
 import {
   appNameFromHost,
-  createHeadInjector,
+  createHeadInjector as createAppHeadInjector,
   grokXCreatorHeadTags,
-  injectGrokPwaHead,
+  injectGrokPwaHead as injectAppPwaHead,
   isDocumentPath,
   isInstallQuery,
   publicAppHost,
@@ -20,6 +20,18 @@ import {
 import { renderInstallPage } from "./grok-pwa-plugin.mjs";
 
 const TEMPLATE_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
+const EMPTY_APP_ROOT = mkdtempSync(join(tmpdir(), "grok-pwa-test-"));
+after(() => rmSync(EMPTY_APP_ROOT, { recursive: true, force: true }));
+
+// Generic chrome assertions must not inherit the current app's site.json or
+// public share card. Tests that need filesystem identity provide their own cwd.
+function injectGrokPwaHead(html, ctx = {}) {
+  return injectAppPwaHead(html, { cwd: EMPTY_APP_ROOT, ...ctx });
+}
+
+function createHeadInjector(ctx = {}) {
+  return createAppHeadInjector({ cwd: EMPTY_APP_ROOT, ...ctx });
+}
 
 test("injects before </head>", () => {
   const out = injectGrokPwaHead("<html><head><title>x</title></head><body></body></html>");
@@ -83,14 +95,8 @@ test("injects x:creator tags when both creator values are set", () => {
 
 test("escapes x:creator values", () => {
   const tags = grokXCreatorHeadTags('"><script>', '1" onclick="alert(1)');
-  assert.equal(
-    tags[0],
-    '<meta property="x:creator" content="&quot;&gt;&lt;script&gt;">',
-  );
-  assert.equal(
-    tags[1],
-    '<meta property="x:creator:id" content="1&quot; onclick=&quot;alert(1)">',
-  );
+  assert.equal(tags[0], '<meta property="x:creator" content="&quot;&gt;&lt;script&gt;">');
+  assert.equal(tags[1], '<meta property="x:creator:id" content="1&quot; onclick=&quot;alert(1)">');
 });
 
 test("does not duplicate x:creator tags", () => {
@@ -208,7 +214,7 @@ test("snapshotOgIdentity stamps banner from public/x-banner.jpg", () => {
 });
 
 test("emits x:game:image for a public host when site.banner is set", () => {
-  const html = "<html><head><meta property=\"x:game:image\" content=\"old\"></head></html>";
+  const html = '<html><head><meta property="x:game:image" content="old"></head></html>';
   const out = injectGrokPwaHead(html, {
     host: "wild-race.grok.me",
     site: { title: "Wild Race", type: "x:game", card: "custom", banner: "/x-banner.jpg" },
@@ -251,7 +257,10 @@ test("published grok.me slug is still a title fallback", () => {
 });
 
 test("rejects Vercel system hosts as og:image origins", () => {
-  assert.equal(publicAppHost("01a020b6-803a-71a2-bb47-e2bec57eb9a2-662k8x1l1-xai-org.vercel.app"), "");
+  assert.equal(
+    publicAppHost("01a020b6-803a-71a2-bb47-e2bec57eb9a2-662k8x1l1-xai-org.vercel.app"),
+    "",
+  );
   assert.equal(publicAppHost("demo.vercel.app:443"), "");
   assert.equal(publicAppHost("vercel.app"), "");
   assert.equal(publicAppHost("wild-race.grok.me"), "wild-race.grok.me");
@@ -347,9 +356,7 @@ test("placeholder og:image appends site.color when it is 6-digit hex", () => {
 });
 
 test("document title entities are not double-escaped on og:title", () => {
-  const out = injectGrokPwaHead(
-    "<html><head><title>Cats &amp; Dogs</title></head></html>",
-  );
+  const out = injectGrokPwaHead("<html><head><title>Cats &amp; Dogs</title></head></html>");
   assert.match(out, /property="og:title" content="Cats &amp; Dogs"/);
   assert.doesNotMatch(out, /Cats &amp;amp; Dogs/);
 });
@@ -360,6 +367,20 @@ test("site.json title wins over the host slug", () => {
     site: { title: "Pixel Nova" },
   });
   assert.match(out, /property="og:title" content="Pixel Nova"/);
+});
+
+test("reads the current fixture's site.json when site is not supplied", (t) => {
+  const root = mkdtempSync(join(tmpdir(), "grok-og-site-"));
+  t.after(() => rmSync(root, { recursive: true, force: true }));
+  mkdirSync(join(root, "src/lib/og"), { recursive: true });
+  writeFileSync(join(root, "src/lib/og/site.json"), JSON.stringify({ title: "Fixture App" }));
+  const out = injectGrokPwaHead("<html><head><title>Document title</title></head></html>", {
+    cwd: root,
+    appName: "Fallback name",
+    host: "wild-race.grok.me",
+  });
+  assert.match(out, /property="og:title" content="Fixture App"/);
+  assert.match(out, /apple-mobile-web-app-title" content="Fixture App"/);
 });
 
 test("injects into documents with no head element", () => {
@@ -503,4 +524,3 @@ test("vite plugin bakes og identity as a virtual module", () => {
   assert.match(plugin, /virtual:grok-og-identity/);
   assert.match(plugin, /snapshotOgIdentity/);
 });
-

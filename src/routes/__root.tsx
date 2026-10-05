@@ -18,7 +18,7 @@ export const Route = createRootRoute({
       {
         name: "description",
         content:
-          "Paste a public YouTube URL. Extract clean caption text with a title, summary, and readable transcript.",
+          "Turn audio, video, and public YouTube captions into readable, editable text. Personal transcript history stays in your browser.",
       },
       { name: "theme-color", content: "#F6F3EE" },
     ],
