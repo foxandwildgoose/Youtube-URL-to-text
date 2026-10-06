@@ -1,4 +1,5 @@
 import type { MediaSource, TimestampQuality, UploadState } from "./media-types.ts";
+import type { SlideData } from "./slides/types.ts";
 
 export type LangMode = "auto" | "ko" | "en";
 
@@ -31,7 +32,7 @@ export type ExtractInput = {
   lang: LangMode;
 };
 
-export type CaptionSourceType = "manual" | "asr" | "transcription";
+export type CaptionSourceType = "manual" | "asr" | "transcription" | "visual";
 
 export type TimestampMode = "off" | "inline" | "srt";
 
@@ -66,6 +67,8 @@ export type Paragraph = {
 };
 
 export type Job = {
+  processingMode?: "captions" | "audio" | "slides";
+  slides?: SlideData;
   id?: string;
   source?: MediaSource;
   upload?: UploadState;

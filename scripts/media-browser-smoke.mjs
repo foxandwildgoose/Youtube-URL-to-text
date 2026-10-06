@@ -92,6 +92,11 @@ try {
     await page.getByRole("button", { name: "Transcription complete", exact: true }).isDisabled(),
     true,
   );
+  await page.locator(".transcript-block").first().scrollIntoViewIfNeeded();
+  await page
+    .getByText(/NVIDIA Blackwell architecture에서는 HBM4/)
+    .first()
+    .waitFor();
   assert.match(await page.locator("body").innerText(), /HBM4/);
   console.log(
     "Real worker audio extraction → safe request → mocked transcription → IndexedDB → result: passed",

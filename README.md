@@ -2,7 +2,26 @@
 
 Audio, video & YouTube → readable text. A personal media transcription workspace built on the existing React / TanStack Start application.
 
-## One GoPro recording → one transcript
+## MP4 TO TEXT · visible slide text, audio ignored
+
+The third mode reads **presentation images**, independently of Upload File's spoken-audio transcription. The same MP4 can have separate audio and visual jobs. No audio is extracted, analyzed, uploaded or sent to any model in visual mode; a video without an audio track works.
+
+1. Choose **MP4 TO TEXT**, select one local MP4 and review its muted native preview.
+2. Capture the preview at the playback position. Drag the four region corners or enter percentages, compare the original/corrected image, and **Apply ROI keyframe**. Include slide edges and footnotes.
+3. **Scan slide candidates locally**. The default is 2 samples/second at 768 pixels, with denser boundary refinement. No model calls occur during scanning. Review each chronological state, animation and revisited appearance; insert missed states or exclude non-slide intervals while retaining evidence.
+4. Review Standard/Economy profile, selected states, planned crops and USD estimate. Enter the memory-only personal slide access code and explicitly approve extraction. Start with 1–3 states for a pilot if recognition is uncertain.
+5. Extract only approved PNG crops, one bounded request at a time. Review high-resolution source images, raw blocks, uncertainty, separate corrections and immutable attempts. Export UTF-8 TXT/Markdown/JSON with optional Windows BOM.
+6. Pause/cancel keeps completed work. After reload, reopen the **MP4 TO TEXT** history item and re-select the source. A text backup excludes images/video; regenerate missing evidence from the recording. Unknown-billing attempts require a deliberate retry approval.
+
+Configure server `OPENAI_API_KEY` and random 24+ character `SLIDES_ACCESS_TOKEN`; a blank dedicated token explicitly falls back to `TRANSCRIPTION_ACCESS_TOKEN`. Default models are allowlisted `gpt-6.1-sol` / low reasoning and optional `gpt-6-luna` / none reasoning. No automatic expensive-model substitution occurs. See `.env.example` and [visual architecture/configuration](docs/slides.md).
+
+The default application budget is **$5 per job**, with a 25% planning allowance, candidate/request safeguards and limited rate-limit retries. It pauses before a next estimated reservation would exceed the budget. This is a browser operational guardrail, not an account-wide billing cap or exactly-once provider charging. Dimensions drive an adjustable token heuristic; no undocumented Sol/Luna image-token formula is assumed. Example: 96 Sol calls × (3,000 input × $2/M + 1,000 billed output × $10/M) = **$1.536**, or **$1.92** with a hypothetical 25% planning allowance. Actual calls/usage/accuracy must be measured.
+
+IndexedDB version 2 preserves old jobs and adds separate bounded PNG assets and processing leases. Text backups use version 2 when visual jobs are present and still import legacy version 1. No paid external database or cloud video storage is required.
+
+Run `npm run test:slides:browser` with the development server running; `SLIDES_SMOKE_URL` targets a built preview. Paid calls and external fonts/branding are intercepted, while actual MP4 decoding, image requests, IndexedDB, editing and exports are tested. The no-audio presentation fixture is reproducible with `node scripts/create-slides-fixture.mjs` (optional system FFmpeg + Playwright). This fixture is **not recognition-quality or 1 GB readiness evidence**. See the [implementation/validation report](docs/slides-implementation-report.md) and [real-recording/pilot checklist](docs/slides-validation.md).
+
+## One GoPro recording → one transcript (audio mode)
 
 1. Open **Upload File** and drop your MP4, or choose **Browse Files**.
 2. Choose **Korean + English** and **AI Conference**.

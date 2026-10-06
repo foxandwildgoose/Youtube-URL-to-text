@@ -38,6 +38,10 @@ import { ThemeToggle } from "./theme-toggle";
 const UploadWorkspace = lazy(() =>
   import("./upload-workspace").then((module) => ({ default: module.UploadWorkspace })),
 );
+const SlidesWorkspace = lazy(() =>
+  import("./slides/workspace").then((module) => ({ default: module.SlidesWorkspace })),
+);
+const SOURCE_MODES = ["youtube", "upload", "slides"] as const;
 
 const LANGS: Array<{ id: LangMode; label: string }> = [
   { id: "auto", label: "Auto" },
@@ -112,7 +116,9 @@ function finishJob(
 export function Workspace() {
   const extractOnServer = useServerFn(extractTranscript);
   const summarizeOnServer = useServerFn(summarizeTranscript);
-  const [sourceMode, setSourceMode] = useState<"youtube" | "upload">("youtube");
+  const [sourceMode, setSourceMode] = useState<(typeof SOURCE_MODES)[number]>("youtube");
+  const [slidesMounted, setSlidesMounted] = useState(false);
+  const [slidesBusy, setSlidesBusy] = useState(false);
   const [uploadMounted, setUploadMounted] = useState(false);
   const [uploadBusy, setUploadBusy] = useState(false);
   const [mediaUrl, setMediaUrl] = useState<string | undefined>();
@@ -252,7 +258,14 @@ export function Workspace() {
 
   async function generateSummary() {
     const selected = currentJob.current;
-    if (!selected || summaryLock.current || uploadBusy) return;
+    if (
+      !selected ||
+      selected.processingMode === "slides" ||
+      summaryLock.current ||
+      uploadBusy ||
+      slidesBusy
+    )
+      return;
     const selectedId = jobIdentity(selected);
     summaryLock.current = true;
     setSummaryBusy(true);
@@ -333,9 +346,15 @@ export function Workspace() {
 
   function reopen(next: Job) {
     setMediaUrl(undefined);
-    const mode = next.source?.kind === "upload" ? "upload" : "youtube";
+    const mode =
+      next.processingMode === "slides"
+        ? "slides"
+        : next.source?.kind === "upload"
+          ? "upload"
+          : "youtube";
     setSourceMode(mode);
     if (mode === "upload") setUploadMounted(true);
+    if (mode === "slides") setSlidesMounted(true);
     setInput(next.url ?? "");
     setLang(next.requestedLang);
     setSummaryKind(next.summaryKind || "interview");
@@ -346,8 +365,13 @@ export function Workspace() {
   }
 
   const showEmpty = sourceMode === "youtube" && status === "idle" && !job;
-  const showResult = job && job.paragraphs.length > 0 && status !== "extracting";
-  const busy = status === "extracting" || uploadBusy || summaryBusy;
+  const showResult =
+    job &&
+    job.processingMode !== "slides" &&
+    sourceMode !== "slides" &&
+    job.paragraphs.length > 0 &&
+    status !== "extracting";
+  const busy = status === "extracting" || uploadBusy || slidesBusy || summaryBusy;
 
   return (
     <div className="min-h-dvh bg-bg text-fg">
@@ -366,7 +390,7 @@ export function Workspace() {
 
       <main className="mx-auto flex max-w-4xl flex-col gap-6 px-4 py-6 sm:px-6 sm:py-8">
         <div role="tablist" aria-label="Media source" className="seg-track">
-          {(["youtube", "upload"] as const).map((mode) => (
+          {SOURCE_MODES.map((mode, index) => (
             <button
               key={mode}
               role="tab"
@@ -382,22 +406,29 @@ export function Workspace() {
                   event.key === "Home"
                     ? "youtube"
                     : event.key === "End"
-                      ? "upload"
-                      : mode === "youtube"
-                        ? "upload"
-                        : "youtube";
+                      ? "slides"
+                      : SOURCE_MODES[
+                          (index + (event.key === "ArrowRight" ? 1 : SOURCE_MODES.length - 1)) %
+                            SOURCE_MODES.length
+                        ]!;
                 setSourceMode(next);
                 if (next === "upload") setUploadMounted(true);
+                if (next === "slides") setSlidesMounted(true);
                 document.getElementById(`source-${next}`)?.focus();
               }}
               disabled={busy}
               onClick={() => {
                 setSourceMode(mode);
                 if (mode === "upload") setUploadMounted(true);
+                if (mode === "slides") setSlidesMounted(true);
               }}
               className={`seg-item ${sourceMode === mode ? "seg-item-on" : ""}`}
             >
-              {mode === "youtube" ? "YouTube URL" : "Upload File"}
+              {mode === "youtube"
+                ? "YouTube URL"
+                : mode === "upload"
+                  ? "Upload File"
+                  : "MP4 TO TEXT"}
             </button>
           ))}
         </div>
@@ -503,7 +534,7 @@ export function Workspace() {
               }
             >
               <UploadWorkspace
-                job={job}
+                job={job?.processingMode === "slides" ? null : job}
                 onJob={(next) => {
                   currentJob.current = next;
                   setJob(next);
@@ -513,6 +544,34 @@ export function Workspace() {
                 onMedia={setMediaUrl}
                 onBusy={setUploadBusy}
                 externalDisabled={summaryBusy}
+                onNew={() => {
+                  currentJob.current = null;
+                  setJob(null);
+                  setStatus("idle");
+                }}
+              />
+            </Suspense>
+          </div>
+        ) : null}
+
+        {slidesMounted ? (
+          <div
+            id="panel-slides"
+            role="tabpanel"
+            aria-labelledby="source-slides"
+            hidden={sourceMode !== "slides"}
+          >
+            <Suspense
+              fallback={
+                <p role="status" className="text-sm text-muted">
+                  Preparing visual slide workspace…
+                </p>
+              }
+            >
+              <SlidesWorkspace
+                job={job}
+                onPersist={persistJob}
+                onBusy={setSlidesBusy}
                 onNew={() => {
                   currentJob.current = null;
                   setJob(null);
@@ -539,7 +598,7 @@ export function Workspace() {
           </p>
         ) : null}
 
-        {busy ? <ExtractSkeleton progress={progress} /> : null}
+        {busy && !slidesBusy ? <ExtractSkeleton progress={progress} /> : null}
 
         {status === "error" && error ? (
           <div className="theme-surface rounded-xl border border-border bg-panel p-5">
@@ -634,7 +693,7 @@ export function Workspace() {
           <ul className="theme-surface divide-y divide-border overflow-hidden rounded-xl border border-border bg-panel">
             {jobs
               .filter((item) =>
-                `${item.title} ${item.paragraphs.map((p) => p.text).join(" ")}`
+                `${item.title} ${item.paragraphs.map((p) => p.text).join(" ")} ${item.slides?.states.flatMap((s) => [...Object.values(s.edits), ...s.attempts.flatMap((a) => a.extraction?.blocks.map((b) => b.text + " " + b.rows.flat().join(" ")) ?? [])]).join(" ") ?? ""}`
                   .toLowerCase()
                   .includes(historyQuery.toLowerCase()),
               )
@@ -652,9 +711,11 @@ export function Workspace() {
                         item.videoId}
                     </span>
                     <span className="block text-xs text-subtle">
-                      {item.source?.kind === "upload"
-                        ? (item.upload?.status ?? "completed")
-                        : "YouTube"}{" "}
+                      {item.processingMode === "slides"
+                        ? `MP4 TO TEXT · ${item.slides?.status}`
+                        : item.source?.kind === "upload"
+                          ? (item.upload?.status ?? "completed")
+                          : "YouTube"}{" "}
                       · {item.language} · {relativeTime(item.createdAt)}
                     </span>
                   </button>
@@ -689,9 +750,9 @@ export function Workspace() {
       <footer className="mx-auto max-w-4xl px-4 pb-10 sm:px-6">
         <p className="text-xs leading-relaxed text-subtle">
           Personal research use. YouTube mode reads public captions. Uploaded media is processed
-          locally; small audio segments are sent securely to the configured transcription provider.
-          INTERTEXT maintains no permanent server-side media library. Transcript history stays in
-          this browser.
+          locally; audio mode sends small audio segments, while MP4 TO TEXT sends only approved
+          slide images. INTERTEXT maintains no permanent server-side media library. Transcript
+          history stays in this browser.
         </p>
       </footer>
     </div>

@@ -16,14 +16,15 @@
     "preview:stop": "node scripts/preview.mjs stop",
     "typecheck": "tsc --noEmit",
     "check:auth": "node scripts/check-auth-invariant.mjs",
-    "test": "node --test 'scripts/**/*.test.mjs' && node --experimental-strip-types --test src/lib/app-data/app-data.test.ts src/lib/app-data/readiness-schedule.test.ts src/lib/auth/gate-identity.test.ts src/lib/auth/sign-in-gate.test.ts src/lib/intertext/parse-url.test.ts src/lib/intertext/clean.test.ts src/lib/intertext/export.test.ts src/lib/intertext/summarize.test.ts src/lib/theme.test.ts src/lib/intertext/media-*.test.ts src/lib/intertext/upload-pipeline.test.ts src/lib/intertext/transcription*.test.ts src/lib/intertext/storage.test.ts",
+    "test": "node --test 'scripts/**/*.test.mjs' && node --experimental-strip-types --test src/lib/app-data/app-data.test.ts src/lib/app-data/readiness-schedule.test.ts src/lib/auth/gate-identity.test.ts src/lib/auth/sign-in-gate.test.ts src/lib/intertext/parse-url.test.ts src/lib/intertext/clean.test.ts src/lib/intertext/export.test.ts src/lib/intertext/summarize.test.ts src/lib/theme.test.ts src/lib/intertext/media-*.test.ts src/lib/intertext/upload-pipeline.test.ts src/lib/intertext/transcription*.test.ts src/lib/intertext/storage.test.ts src/lib/intertext/slides/*.test.ts",
     "lint": "eslint .",
     "format": "prettier --write .",
     "prepare:media": "node scripts/prepare-media.mjs",
     "predev": "npm run prepare:media",
     "prebuild": "npm run prepare:media",
     "prebuild:dev": "npm run prepare:media",
-    "test:media:browser": "node scripts/media-browser-smoke.mjs"
+    "test:media:browser": "node scripts/media-browser-smoke.mjs",
+    "test:slides:browser": "node --experimental-strip-types scripts/slides-browser-smoke.mjs"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.4",

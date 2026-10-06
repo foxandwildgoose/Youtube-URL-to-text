@@ -1,8 +1,9 @@
 import type { Job, SummaryKind } from "./types.ts";
 import { isSummaryKind } from "./types.ts";
+import { validateSlideData, validateSlideSettings } from "./slides/schema.ts";
 
 const DATABASE = "intertext";
-const VERSION = 1;
+const VERSION = 2;
 const LEGACY_KEYS = ["intertext.jobs.v1", "intertext.jobs.v2"] as const;
 const INTERNAL_PREFIX = "__intertext_";
 
@@ -21,7 +22,7 @@ export class StorageError extends Error {
 type SettingRecord = { key: string; value: unknown };
 export type IntertextBackup = {
   format: "intertext-backup";
-  version: 1;
+  version: 1 | 2;
   exportedAt: string;
   jobs: Job[];
   settings: Record<string, unknown>;
@@ -154,7 +155,7 @@ function validateJob(
     typeof value.title !== "string" ||
     typeof value.language !== "string" ||
     !["auto", "ko", "en"].includes(String(value.requestedLang)) ||
-    !["manual", "asr", "transcription"].includes(String(value.sourceType)) ||
+    !["manual", "asr", "transcription", "visual"].includes(String(value.sourceType)) ||
     typeof value.provider !== "string" ||
     typeof value.providerLabel !== "string" ||
     !finiteNonnegative(value.segmentCount) ||
@@ -292,6 +293,30 @@ function validateJob(
         invalid("A completed upload chunk is missing its transcript or checkpoint metadata.", code);
     }
   }
+  if (
+    value.processingMode !== undefined &&
+    !["captions", "audio", "slides"].includes(String(value.processingMode))
+  )
+    invalid("Processing mode is invalid.", code);
+  if (value.processingMode === "slides" || value.slides !== undefined) {
+    if (
+      value.processingMode !== "slides" ||
+      value.sourceType !== "visual" ||
+      value.upload !== undefined ||
+      value.summary ||
+      value.segments.length ||
+      value.paragraphs.length ||
+      !isRecord(value.source) ||
+      value.source.kind !== "upload"
+    )
+      invalid("Visual jobs must remain independent of speech and summaries.", code);
+    try {
+      validateSlideData(value.slides);
+    } catch {
+      invalid("The visual job checkpoint is invalid.", code);
+    }
+  } else if (value.sourceType === "visual")
+    invalid("Visual jobs need an explicit slides discriminator.", code);
   return normalizeJob(value as unknown as Job);
 }
 
@@ -312,6 +337,12 @@ function openDatabase(): Promise<IDBDatabase> {
         database.createObjectStore("jobs", { keyPath: "id" });
       if (!database.objectStoreNames.contains("settings"))
         database.createObjectStore("settings", { keyPath: "key" });
+      if (!database.objectStoreNames.contains("slideAssets")) {
+        const assets = database.createObjectStore("slideAssets", { keyPath: "id" });
+        assets.createIndex("jobId", "jobId");
+      }
+      if (!database.objectStoreNames.contains("slideLeases"))
+        database.createObjectStore("slideLeases", { keyPath: "id" });
     };
     request.onsuccess = () => {
       if (blocked) {
@@ -334,7 +365,7 @@ function openDatabase(): Promise<IDBDatabase> {
   });
 }
 
-function transact<T>(
+export function transact<T>(
   database: IDBDatabase,
   stores: string[],
   mode: IDBTransactionMode,
@@ -462,7 +493,7 @@ async function migrateLegacy(database: IDBDatabase): Promise<void> {
   }
 }
 
-async function withDatabase<T>(action: (database: IDBDatabase) => Promise<T>): Promise<T> {
+export async function withDatabase<T>(action: (database: IDBDatabase) => Promise<T>): Promise<T> {
   let database: IDBDatabase | undefined;
   try {
     database = await openDatabase();
@@ -520,10 +551,26 @@ export async function saveJobs(jobs: Job[]): Promise<void> {
 
 export async function deleteJob(id: string): Promise<void> {
   await withDatabase((database) =>
-    transact<void>(database, ["jobs"], "readwrite", (transaction, result) => {
-      transaction.objectStore("jobs").delete(id);
-      result(undefined);
-    }),
+    transact<void>(
+      database,
+      ["jobs", "slideAssets", "slideLeases"],
+      "readwrite",
+      (transaction, result) => {
+        transaction.objectStore("jobs").delete(id);
+        transaction.objectStore("slideLeases").delete(id);
+        const cursor = transaction
+          .objectStore("slideAssets")
+          .index("jobId")
+        .openCursor(id);
+        cursor.onsuccess = () => {
+          if (cursor.result) {
+            cursor.result.delete();
+            cursor.result.continue();
+          }
+        };
+        result(undefined);
+      },
+    ),
   );
 }
 
@@ -549,6 +596,13 @@ function validateSetting(
   validateSettingKey(key, code);
   assertJsonData(value, code);
   if (key === "upload") validateUploadSettings(value, code);
+  if (key === "slides") {
+    try {
+      validateSlideSettings(value);
+    } catch {
+      invalid("Visual settings are invalid.", code);
+    }
+  }
 }
 
 export async function getSettings<T>(key: string): Promise<T | undefined> {
@@ -594,7 +648,7 @@ export async function exportBackup(): Promise<string> {
           if (jobs && settings)
             result({
               format: "intertext-backup",
-              version: 1,
+              version: jobs.some((job) => job.processingMode === "slides") ? 2 : 1,
               exportedAt: new Date().toISOString(),
               jobs,
               settings,
@@ -643,7 +697,7 @@ export function validateBackup(input: string | unknown): IntertextBackup {
   if (
     !isRecord(parsed) ||
     parsed.format !== "intertext-backup" ||
-    parsed.version !== 1 ||
+    (parsed.version !== 1 && parsed.version !== 2) ||
     !Array.isArray(parsed.jobs) ||
     !isRecord(parsed.settings)
   )
@@ -653,6 +707,8 @@ export function validateBackup(input: string | unknown): IntertextBackup {
     );
   assertJsonData(parsed, "invalid_backup");
   const jobs = parsed.jobs.map((job) => validateJob(job, "invalid_backup"));
+  if (parsed.version === 1 && jobs.some((job) => job.processingMode === "slides"))
+    invalid("Visual jobs require backup version 2.", "invalid_backup");
   const identities = new Set<string>();
   for (const job of jobs) {
     const id = jobIdentity(job);
@@ -667,7 +723,7 @@ export function validateBackup(input: string | unknown): IntertextBackup {
     validateSetting(key, value, "invalid_backup");
   return {
     format: "intertext-backup",
-    version: 1,
+    version: parsed.version,
     exportedAt:
       typeof parsed.exportedAt === "string" ? parsed.exportedAt : new Date().toISOString(),
     jobs,

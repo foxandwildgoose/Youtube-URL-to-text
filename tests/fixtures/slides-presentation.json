@@ -1,0 +1,53 @@
+{
+  "kind": "generated presentation fixture, no audio",
+  "width": 1280,
+  "height": 720,
+  "expectedStates": [
+    {
+      "name": "A",
+      "duration": 3,
+      "count": 4,
+      "bullet": "Mixed Korean + English",
+      "start": 0
+    },
+    {
+      "name": "number-change",
+      "duration": 3,
+      "count": 5,
+      "bullet": "Mixed Korean + English",
+      "start": 3
+    },
+    {
+      "name": "build",
+      "duration": 2,
+      "count": 5,
+      "bullet": "Mixed Korean + English\nIncremental bullet: NVLink",
+      "start": 6
+    },
+    {
+      "name": "replacement",
+      "duration": 2,
+      "count": 5,
+      "bullet": "Replaced text: HBM4 2.5 TB/s",
+      "start": 8
+    },
+    {
+      "name": "A-revisited",
+      "duration": 3,
+      "count": 4,
+      "bullet": "Mixed Korean + English",
+      "start": 10
+    },
+    {
+      "name": "textless",
+      "duration": 2,
+      "start": 13
+    },
+    {
+      "name": "black",
+      "duration": 1,
+      "start": 15
+    }
+  ],
+  "recognition": "NOT EVALUATED: ordinary tests mock the provider"
+}

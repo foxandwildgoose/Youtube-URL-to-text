@@ -107,7 +107,7 @@ function upload(overrides: Partial<Job> = {}): Job {
 
 async function writeRawSetting(key: string, value: unknown): Promise<void> {
   await new Promise<void>((resolve, reject) => {
-    const request = indexedDB.open("intertext", 1);
+    const request = indexedDB.open("intertext");
     request.onerror = () => reject(request.error);
     request.onsuccess = () => {
       const database = request.result;

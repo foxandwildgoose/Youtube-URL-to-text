@@ -147,6 +147,20 @@
   background: var(--color-panel-2);
 }
 
+.slides-workspace button {
+  white-space: normal;
+  height: auto;
+  min-height: 2.75rem;
+}
+.slides-workspace input,
+.slides-workspace textarea {
+  min-width: 0;
+}
+.slide-source {
+  overflow-wrap: anywhere;
+  tab-size: 4;
+}
+
 .seg-item {
   display: inline-flex;
   min-height: 2.75rem;

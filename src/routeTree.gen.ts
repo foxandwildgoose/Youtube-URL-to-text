@@ -10,12 +10,24 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiSlidesRouteImport } from './routes/api/slides'
+import { Route as ApiSlidesConfigRouteImport } from './routes/api/slides-config'
 import { Route as ApiTranscriptionRouteImport } from './routes/api/transcription'
 import { Route as ApiTranscriptionConfigRouteImport } from './routes/api/transcription-config'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiSlidesRoute = ApiSlidesRouteImport.update({
+  id: '/api/slides',
+  path: '/api/slides',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiSlidesConfigRoute = ApiSlidesConfigRouteImport.update({
+  id: '/api/slides-config',
+  path: '/api/slides-config',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiTranscriptionRoute = ApiTranscriptionRouteImport.update({
@@ -31,30 +43,54 @@ const ApiTranscriptionConfigRoute = ApiTranscriptionConfigRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/api/slides': typeof ApiSlidesRoute
+  '/api/slides-config': typeof ApiSlidesConfigRoute
   '/api/transcription': typeof ApiTranscriptionRoute
   '/api/transcription-config': typeof ApiTranscriptionConfigRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/api/slides': typeof ApiSlidesRoute
+  '/api/slides-config': typeof ApiSlidesConfigRoute
   '/api/transcription': typeof ApiTranscriptionRoute
   '/api/transcription-config': typeof ApiTranscriptionConfigRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/api/slides': typeof ApiSlidesRoute
+  '/api/slides-config': typeof ApiSlidesConfigRoute
   '/api/transcription': typeof ApiTranscriptionRoute
   '/api/transcription-config': typeof ApiTranscriptionConfigRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/transcription' | '/api/transcription-config'
+  fullPaths:
+    | '/'
+    | '/api/slides'
+    | '/api/slides-config'
+    | '/api/transcription'
+    | '/api/transcription-config'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/transcription' | '/api/transcription-config'
-  id: '__root__' | '/' | '/api/transcription' | '/api/transcription-config'
+  to:
+    | '/'
+    | '/api/slides'
+    | '/api/slides-config'
+    | '/api/transcription'
+    | '/api/transcription-config'
+  id:
+    | '__root__'
+    | '/'
+    | '/api/slides'
+    | '/api/slides-config'
+    | '/api/transcription'
+    | '/api/transcription-config'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ApiSlidesRoute: typeof ApiSlidesRoute
+  ApiSlidesConfigRoute: typeof ApiSlidesConfigRoute
   ApiTranscriptionRoute: typeof ApiTranscriptionRoute
   ApiTranscriptionConfigRoute: typeof ApiTranscriptionConfigRoute
 }
@@ -66,6 +102,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/slides': {
+      id: '/api/slides'
+      path: '/api/slides'
+      fullPath: '/api/slides'
+      preLoaderRoute: typeof ApiSlidesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/slides-config': {
+      id: '/api/slides-config'
+      path: '/api/slides-config'
+      fullPath: '/api/slides-config'
+      preLoaderRoute: typeof ApiSlidesConfigRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/transcription': {
@@ -87,6 +137,8 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ApiSlidesRoute: ApiSlidesRoute,
+  ApiSlidesConfigRoute: ApiSlidesConfigRoute,
   ApiTranscriptionRoute: ApiTranscriptionRoute,
   ApiTranscriptionConfigRoute: ApiTranscriptionConfigRoute,
 }
